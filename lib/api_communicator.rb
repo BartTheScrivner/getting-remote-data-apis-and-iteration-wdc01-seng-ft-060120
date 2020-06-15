@@ -21,7 +21,11 @@ def get_character_movies_from_api(character_name)
   #  of movies by title. Have a play around with the puts with other info about a given film.
   response_hash = parse_response('http://swapi.dev/api/people')
   character = response_hash["results"].find{|character| character["name"].downcase == character_name}
-  if character == nil
+  while character == nil && response_hash["next"] != nil
+    response_hash = parse_response(response_hash["next"]) 
+    character = response_hash["results"].find{|character| character["name"].downcase == character_name}
+  end
+  if character == nil && response_hash["next"] == nil
     puts "Sorry, didn't find that one."
   else
     array_of_film_urls = character["films"]
